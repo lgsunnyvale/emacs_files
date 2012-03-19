@@ -1,0 +1,6 @@
+*elc
+.DS_Store
+starter-kit-2.*
+*.tar
+backups/*
+auto-save-list/*
