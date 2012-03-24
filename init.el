@@ -151,6 +151,7 @@
 (global-set-key [(control z)] 'undo)
 (global-set-key [(control _)] 'eval-region)
 (global-set-key [(super w)] 'ido-kill-buffer)
+(global-set-key [(super k)] 'erase-buffer)
 
 (put 'dired-find-alternate-file 'disabled nil)
 
@@ -445,6 +446,7 @@ text))
 ;;(add-hook 'window-setup-hook 'maximize-frame t)
 
 (global-set-key [s-return] 'textmate-next-line)
+
 (require 'doc-view)
 
 (add-to-list 'load-path "~/.emacs.d/site-lisp/tuareg-mode")
@@ -462,3 +464,41 @@ text))
 (autoload 'tuareg-imenu-set-imenu "tuareg-imenu" "Configuration of imenu for tuareg" t)
 (add-hook 'tuareg-mode-hook 'tuareg-imenu-set-imenu)
 (put 'erase-buffer 'disabled nil)
+(defun my-insert-braces ()
+  (interactive)
+  (if (region-active-p)
+      (insert-pair 1 ?\" ?\")
+    (insert "\"\"")
+    (backward-char)))
+(global-set-key (kbd "C-\"") 'insert-pair)
+
+;;settings for hippie-expand
+(setq hippie-expand-try-functions-list
+       '(try-expand-dabbrev
+         try-expand-dabbrev-from-kill
+         try-expand-dabbrev-all-buffers
+         try-expand-line
+         try-complete-file-name-partially
+         try-complete-file-name
+         try-complete-lisp-symbol
+         try-complete-lisp-symbol-partially
+))
+
+(defun smart-tab ()
+  "This smart tab is minibuffer compliant: it acts as usual in
+    the minibuffer. Else, if mark is active, indents region. Else if
+    point is at the end of a symbol, expands it. Else indents the
+    current line."
+  (interactive)
+  (if (minibufferp)
+      (unless (minibuffer-complete)
+        (hippie-expand nil))
+    (if mark-active
+        (indent-region (region-beginning)
+                       (region-end))
+      (if (looking-at "\\_>")
+         (hippie-expand nil)
+        (indent-for-tab-command)))))
+(global-set-key (kbd "TAB") 'smart-tab)
+
+
